@@ -1,0 +1,34 @@
+name: Skill 新增或修改
+description: 提议新增 Skill，或修复现有 Skill 的误触发、缺漏和适配问题
+title: "[Skill] "
+labels:
+  - skill-change
+body:
+  - type: input
+    id: skill
+    attributes:
+      label: Skill 名称
+      placeholder: bitfsae-project-standards
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 实际问题
+      description: 给出真实使用场景、误触发或缺失步骤，不只写准备修改哪个文件。
+    validations:
+      required: true
+  - type: textarea
+    id: triggers
+    attributes:
+      label: 触发边界
+      description: 分别给出应触发和不应触发的示例。
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: 验证方式
+      description: 说明结构校验和实际场景验证计划。
+    validations:
+      required: true
