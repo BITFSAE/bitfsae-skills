@@ -14,7 +14,7 @@
 
 ## 1. Document Ownership
 
-Assign each detailed fact one main owner:
+Each detailed fact has one primary owner. Summarize and link from the README; do not maintain independent copies.
 
 | Information | Preferred owner |
 | --- | --- |
@@ -26,8 +26,6 @@ Assign each detailed fact one main owner:
 | Module state, algorithm, failure behavior | Module document |
 | Pins, nets, electrical assumptions | Hardware document and design files |
 | Build, flash, test, debug | Build/development document |
-
-Summarize and link from the README. Do not maintain independent copies of the same long CAN table or configuration list.
 
 ## 2. README
 
@@ -46,7 +44,7 @@ Keep low-level register values, full protocol layouts, long algorithms, and exha
 
 ## 3. AI Instruction Files
 
-Use imperative rules for how an AI should edit and verify the repository. Include only stable instructions such as:
+Use imperative rules for how an AI should edit and verify the repository. Include only stable instructions:
 
 - generated-file editing limits;
 - where new logic belongs;
@@ -56,7 +54,7 @@ Use imperative rules for how an AI should edit and verify the repository. Includ
 - comment language and clarity requirements;
 - repository-specific safety constraints.
 
-Do not include project overviews, mutable hardware values, CAN message tables, file inventories, or facts already owned by other documents. Keep `AGENTS.md` and `CLAUDE.md` aligned when both exist. BITFSAE `AGENTS.md` must retain `DO NOT send optional commentary` unless explicitly removed by the user.
+Do not include project overviews, mutable hardware values, CAN message tables, file inventories, or facts owned by other documents. Keep `AGENTS.md` and `CLAUDE.md` aligned when both exist. BITFSAE `AGENTS.md` must retain `DO NOT send optional commentary` unless explicitly removed.
 
 ## 4. Changelog and TODO
 
@@ -66,19 +64,19 @@ Use a readable reverse-chronological `CHANGELOG.md`:
 - `未发布/待办` for concrete, still-needed work;
 - dated sections for completed behavior, interfaces, build changes, fixes, and migration notes.
 
-Record outcomes and compatibility impact, not every commit or internal editing step. Do not claim an untested feature is complete. Remove `todo.md` when it only duplicates the changelog; keep a separate planning file only when it contains substantial scheduling or ownership information that does not belong in release history.
+Record outcomes and compatibility impact, not every commit. Do not claim an untested feature is complete. Remove `todo.md` only when it duplicates the changelog; keep it when it contains substantial scheduling or ownership information that does not belong in release history.
 
 ## 5. External Interface Documents
 
-Write these as contracts for producers and consumers. Start with a compact overview, then exact tables, error behavior, and verified examples. Keep interpretation separate from raw layout.
+Write as contracts for producers and consumers. Compact overview → exact tables → error behavior → verified examples. Keep interpretation separate from raw layout.
 
-For each field include name, offset, width, type, byte order, scale, offset, unit, range, invalid value, and meaning. State timing, reset, retry, sequence, persistence, and version compatibility. Use the project's implementation language for examples.
+For each field include: name, offset, width, type, byte order, scale, offset, unit, range, invalid value, and meaning. State timing, reset, retry, sequence, persistence, and version compatibility. Use the project's implementation language for examples.
 
-Keep DBC, OpenAPI, JSON Schema, protobuf, public headers, or similar machine-readable definitions synchronized with prose. State when a schema contains provisional names that still require upstream verification.
+Keep DBC, OpenAPI, JSON Schema, protobuf, public headers, or similar machine-readable definitions synchronized with prose. Note when a schema contains provisional names requiring upstream verification.
 
 ## 6. Configuration Documents
 
-Optimize for safe modification rather than background explanation. Use a table with:
+Optimize for safe modification. Use a table with:
 
 - setting and current value;
 - code symbol or generator location;
@@ -107,13 +105,13 @@ Use a diagram only when it explains relationships or state changes more clearly 
 
 ## 8. Hardware and Build Documents
 
-Hardware documents should map logical functions to pins, nets, peripherals, electrical levels, polarity, pull resistors, isolation, sensor addresses, and calibration assumptions. Distinguish schematic facts from software expectations and unverified board behavior.
+Hardware documents: map logical functions to pins, nets, peripherals, electrical levels, polarity, pull resistors, isolation, sensor addresses, and calibration assumptions. Distinguish schematic facts from software expectations and unverified board behavior.
 
-Build documents should give prerequisites, exact supported commands, output paths, flash/debug entry points, generator workflow, and regeneration checks. Prefer the maintained build system. Keep fallback build paths only when they are verified and useful.
+Build documents: prerequisites, exact supported commands, output paths, flash/debug entry points, generator workflow, and regeneration checks. Prefer the maintained build system. Keep fallback build paths only when verified and useful.
 
 ## 9. Writing and Maintenance Rules
 
-- Match structure to purpose: README is navigational, interface docs are exact, configuration docs are task-oriented, module docs explain behavior, and changelogs summarize change.
+- Match structure to purpose: README navigates, interface docs are exact, configuration docs are task-oriented, module docs explain behavior, changelogs summarize change.
 - Lead with the result or behavior. Define abbreviations once. Put units next to values.
 - Prefer tables for exact field mappings and configuration. Prefer prose for reasons and interactions.
 - Remove stale history from current-state documents; keep it in the changelog or version control.
