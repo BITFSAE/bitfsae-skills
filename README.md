@@ -1,6 +1,8 @@
 # BITFSAE Skills
 
-BITFSAE 队内共享的 Codex Skills。每个 Skill 都是独立目录，可单独安装、维护和发布；本仓库用于代码审核、版本追踪和代际交接。
+[![skills.sh](https://skills.sh/b/BITFSAE/bitfsae-skills)](https://skills.sh/BITFSAE/bitfsae-skills)
+
+BITFSAE 公开维护、队内共享的 Agent Skills。每个 Skill 都是独立目录，可单独安装、维护和发布；本仓库用于代码审核、版本追踪和代际交接。
 
 ## 当前 Skills
 
@@ -27,7 +29,22 @@ bitfsae-skills/
 
 ## 安装
 
-克隆仓库后，把需要的 Skill 目录复制到 Codex Skills 目录：
+使用 `skills` CLI 查看仓库中的全部 Skills：
+
+```bash
+npx skills add BITFSAE/bitfsae-skills --list
+```
+
+把指定 Skill 全局安装到 Codex：
+
+```bash
+npx skills add BITFSAE/bitfsae-skills \
+  --skill bitfsae-project-standards \
+  --agent codex \
+  --global
+```
+
+也可以克隆仓库后手动安装：
 
 ```bash
 git clone https://github.com/BITFSAE/bitfsae-skills.git
@@ -35,6 +52,45 @@ cp -R bitfsae-skills/skills/bitfsae-project-standards ~/.codex/skills/
 ```
 
 更新时重新同步同名目录，并重新启动或刷新使用 Skills 的客户端。不要把整个仓库根目录当作单个 Skill 安装。
+
+## 发布
+
+### skills.sh
+
+GitHub 是公开发布源，skills.sh 负责发现和展示。Skill 合并并推送到公开仓库后，运行一次安装命令即可让 CLI 发现仓库；页面索引和缓存刷新可能延迟。仓库页面使用根目录的 `skills.sh.json` 分组，新 Skill 应同时加入合适的分组。
+
+预计访问地址：
+
+- 仓库：<https://skills.sh/BITFSAE/bitfsae-skills>
+- Skill：<https://skills.sh/BITFSAE/bitfsae-skills/bitfsae-project-standards>
+
+### OpenAI Skills API
+
+OpenAI Skills API 以单个 Skill 目录或 ZIP 为上传单位。先验证并生成可复现的 ZIP：
+
+```bash
+python3 tools/validate_skills.py
+python3 tools/package_skills.py
+```
+
+产物位于 `dist/<skill-name>.zip`，不提交 Git。创建 OpenAI Skill：
+
+```bash
+curl https://api.openai.com/v1/skills \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F "files=@dist/bitfsae-project-standards.zip"
+```
+
+记录响应中的 `skill_...` ID。后续更新创建不可变版本，并把它设为默认版本：
+
+```bash
+curl https://api.openai.com/v1/skills/skill_.../versions \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F "files=@dist/bitfsae-project-standards.zip" \
+  -F "default=true"
+```
+
+Skill ID 属于具体 OpenAI 项目，不写入仓库；API Key 只通过环境变量提供。每个 Skill 独立创建和更新，不把整个多 Skill 仓库打成一个 OpenAI Skill。
 
 ## 参与维护
 
@@ -52,4 +108,4 @@ cp -R bitfsae-skills/skills/bitfsae-project-standards ~/.codex/skills/
 
 ## 许可证
 
-当前尚未确定对外授权方式。在车队确认许可证前，不要加入来源和授权不清楚的第三方 Skill、脚本或模板。
+本仓库采用 [MIT License](LICENSE)。不要加入来源和授权不清楚的第三方 Skill、脚本或模板。

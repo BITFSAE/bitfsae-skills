@@ -1,0 +1,13 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "项目工程标准",
+      "description": "面向 BITFSAE 项目规范、共享接口、交接和发布治理的 Skills。",
+      "skills": [
+        "bitfsae-project-standards"
+      ]
+    }
+  ]
+}

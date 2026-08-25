@@ -19,7 +19,7 @@ Classify by what maintainers must operate and what consumers depend on:
 - experiment or short-lived prototype;
 - monorepo containing several of the above.
 
-Use the relevant standards only. A non-CAN tool does not need a CAN document; a public library still needs an exact API contract and change history.
+Use only the relevant standards. A non-CAN tool does not need a CAN document; a public library still needs an exact API contract and change history.
 
 ## 2. Minimum Document Sets
 
@@ -52,7 +52,7 @@ Use the relevant standards only. A non-CAN tool does not need a CAN document; a 
 
 ### Prototype
 
-Keep documents small but truthful: purpose, how to reproduce, inputs/outputs, known limits, and next decisions. Do not manufacture production-style documents that contain no useful project-specific information.
+Keep documents small but truthful: purpose, how to reproduce, inputs/outputs, known limits, and next decisions. Do not manufacture production-style documents with no useful project-specific information.
 
 ### Monorepo
 
@@ -60,7 +60,7 @@ Use a root README and shared rules for navigation and common workflows. Give ind
 
 ## 3. Adapt Without Weakening Standards
 
-Allow project-specific file names and layouts when they are already clear. Evaluate the function of a document rather than enforcing a name mechanically, except for tooling-required files such as `AGENTS.md`.
+Allow project-specific file names and layouts when they are already clear. Evaluate the function of a document rather than mechanically enforcing a name, except for tooling-required files such as `AGENTS.md`.
 
 Scale detail with risk, public surface, lifetime, team size, and rate of change. Safety-related firmware needs exact failure behavior; a one-off converter may need only a precise CLI and file-format description.
 

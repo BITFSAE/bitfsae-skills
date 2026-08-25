@@ -5,7 +5,7 @@
 - 目录名使用小写字母、数字和连字符，并与 `SKILL.md` 的 `name` 完全一致；
 - 使用 Skill Creator 初始化和验证，不手写不完整的目录骨架；
 - Frontmatter 只保留 `name` 和 `description`；
-- `description` 同时说明能力、应触发的场景和不应触发的场景，避免使用“所有项目”“任何代码任务”等过宽表述；
+- `description` 同时说明能力、应触发的场景和不应触发的场景，避免使用"所有项目""任何代码任务"等过宽表述；
 - `SKILL.md` 只放核心流程，较长的领域规则放在一级 `references/`；
 - 不创建 Skill 自己的 README、安装指南或更新日志；仓库级 README 和 CHANGELOG 统一承担这些职责；
 - `agents/openai.yaml` 的默认提示必须明确引用 `$skill-name`。
@@ -23,7 +23,7 @@
 
 ## Pull Request
 
-- 普通修改至少需要 1 名 `skill-maintainers` 审核；
+- 当前单一维护者阶段不强制人工批准；新增维护者团队后再启用 Code Owner 审核；
 - 大幅改变触发条件、权限边界或外部工具操作的修改，需要说明兼容性和误触发风险；
 - 不直接推送 `main`，不强制推送，不改写已发布 Tag；
 - PR 中写明验证命令和结果；
