@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -16,6 +17,7 @@ SKILLS_DIR = ROOT / "skills"
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 LINK_PATTERN = re.compile(r"(?<!!)\[[^]]*]\(([^)]+)\)")
 FRONTMATTER_PATTERN = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
+SKILLS_SH_CONFIG = ROOT / "skills.sh.json"
 
 
 def fail(message: str) -> None:
@@ -82,11 +84,40 @@ def validate_public_boundary() -> None:
             continue
         if path.name == ".env" or path.suffix.lower() in forbidden_suffixes:
             fail(f"credential file is not allowed: {path.relative_to(ROOT)}")
-        if path.suffix.lower() not in {".md", ".yaml", ".yml", ".py"}:
+        if path.suffix.lower() not in {".json", ".md", ".py", ".yaml", ".yml"}:
             continue
         if private_key_marker in path.read_text(encoding="utf-8"):
             fail(f"private key content found in {path.relative_to(ROOT)}")
     print("OK: public repository boundary")
+
+
+def validate_skills_sh(skill_names: set[str]) -> None:
+    if not SKILLS_SH_CONFIG.is_file():
+        return
+    try:
+        config = json.loads(SKILLS_SH_CONFIG.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        fail(f"skills.sh.json is invalid JSON: {error}")
+
+    groupings = config.get("groupings") if isinstance(config, dict) else None
+    if not isinstance(groupings, list) or not groupings:
+        fail("skills.sh.json must contain at least one grouping")
+    for index, grouping in enumerate(groupings, start=1):
+        if not isinstance(grouping, dict):
+            fail(f"skills.sh.json grouping {index} must be an object")
+        title = grouping.get("title")
+        names = grouping.get("skills")
+        if not isinstance(title, str) or not title.strip():
+            fail(f"skills.sh.json grouping {index} has an empty title")
+        if not isinstance(names, list) or not names:
+            fail(f"skills.sh.json grouping {index} has no skills")
+        unknown = sorted(name for name in names if name not in skill_names)
+        if unknown:
+            fail(
+                f"skills.sh.json grouping {index} references unknown skills: "
+                + ", ".join(unknown)
+            )
+    print("OK: skills.sh.json")
 
 
 def main() -> None:
@@ -97,6 +128,7 @@ def main() -> None:
         fail("no skills found")
     for skill_dir in skill_dirs:
         validate_skill(skill_dir)
+    validate_skills_sh({path.name for path in skill_dirs})
     for path in ROOT.glob("*.md"):
         validate_links(path)
     validate_public_boundary()
