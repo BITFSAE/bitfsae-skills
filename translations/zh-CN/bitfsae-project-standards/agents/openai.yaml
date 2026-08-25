@@ -1,0 +1,4 @@
+interface:
+  display_name: "BITFSAE 项目规范"
+  short_description: "规范 BITFSAE 项目的代码、文档、接口、配置与交付检查"
+  default_prompt: "Use $bitfsae-project-standards to audit and improve this BITFSAE project while preserving its project-specific design."

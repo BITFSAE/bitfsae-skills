@@ -8,6 +8,13 @@
       "skills": [
         "bitfsae-project-standards"
       ]
+    },
+    {
+      "title": "GitHub 协作规范",
+      "description": "面向 BITFSAE 仓库 Git/GitHub 协作、审查与安全边界的 Skills。",
+      "skills": [
+        "bitfsae-github-workflow"
+      ]
     }
   ]
 }

@@ -9,6 +9,7 @@
 - `SKILL.md` 只放核心流程，较长的领域规则放在一级 `references/`；
 - 不创建 Skill 自己的 README、安装指南或更新日志；仓库级 README 和 CHANGELOG 统一承担这些职责；
 - `agents/openai.yaml` 的默认提示必须明确引用 `$skill-name`。
+- 在 `translations/zh-CN/` 下同步创建同名镜像；镜像只用于队内阅读，不参与安装、打包和发布。
 
 ## 修改现有 Skill
 
@@ -18,6 +19,7 @@
 
 - Frontmatter `description`；
 - `agents/openai.yaml` 的名称、简介和默认提示；
+- `translations/zh-CN/<skill-name>/` 的对应文件；
 - 引用文件的路由是否仍准确；
 - 原有使用场景是否被意外破坏。
 

@@ -14,6 +14,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS_DIR = ROOT / "skills"
+TRANSLATIONS_DIR = ROOT / "translations" / "zh-CN"
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 LINK_PATTERN = re.compile(r"(?<!!)\[[^]]*]\(([^)]+)\)")
 FRONTMATTER_PATTERN = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
@@ -35,7 +36,7 @@ def validate_links(path: Path) -> None:
             fail(f"{path.relative_to(ROOT)} contains a missing link: {target}")
 
 
-def validate_skill(skill_dir: Path) -> None:
+def validate_skill(skill_dir: Path, *, announce: bool = True) -> None:
     skill_file = skill_dir / "SKILL.md"
     if not skill_file.is_file():
         fail(f"{skill_dir.relative_to(ROOT)} is missing SKILL.md")
@@ -73,7 +74,30 @@ def validate_skill(skill_dir: Path) -> None:
         if f"${name}" not in default_prompt:
             fail(f"{agent_file.relative_to(ROOT)} default_prompt must mention ${name}")
 
-    print(f"OK: {name}")
+    if announce:
+        print(f"OK: {name}")
+
+
+def validate_translations(skill_dirs: list[Path]) -> None:
+    if not TRANSLATIONS_DIR.is_dir():
+        fail("translations/zh-CN directory is missing")
+    for skill_dir in skill_dirs:
+        mirror_dir = TRANSLATIONS_DIR / skill_dir.name
+        if not mirror_dir.is_dir():
+            fail("missing Chinese mirror for " + skill_dir.name)
+        source_files = {path.relative_to(skill_dir) for path in skill_dir.rglob("*") if path.is_file()}
+        mirror_files = {path.relative_to(mirror_dir) for path in mirror_dir.rglob("*") if path.is_file()}
+        missing = sorted(name.as_posix() for name in source_files - mirror_files)
+        extra = sorted(name.as_posix() for name in mirror_files - source_files)
+        if missing or extra:
+            details = []
+            if missing:
+                details.append("missing: " + ", ".join(missing))
+            if extra:
+                details.append("extra: " + ", ".join(extra))
+            fail("Chinese mirror of " + skill_dir.name + " does not match its file set (" + "; ".join(details) + ")")
+        validate_skill(mirror_dir, announce=False)
+    print("OK: translations")
 
 
 def validate_public_boundary() -> None:
@@ -128,6 +152,7 @@ def main() -> None:
         fail("no skills found")
     for skill_dir in skill_dirs:
         validate_skill(skill_dir)
+    validate_translations(skill_dirs)
     validate_skills_sh({path.name for path in skill_dirs})
     for path in ROOT.glob("*.md"):
         validate_links(path)

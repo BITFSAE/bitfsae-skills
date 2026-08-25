@@ -4,6 +4,8 @@
 
 ### 已完成
 
+- 新增 `bitfsae-github-workflow`，覆盖分支、提交、PR 审查、共享接口同步和安全边界，并保持触发范围与约束精简。
+- 新增 `translations/zh-CN/` 中文镜像，不参与安装、打包与发布，仅用于队内阅读和与英文原版同步。
 - 建立 BITFSAE 多 Skill 公共仓库结构、贡献规范和自动校验。
 - 迁入 `bitfsae-project-standards` 作为首个共享 Skill。
 - 为项目规范 Skill 增加按需同步 `BITFSAE/vehicle-interfaces` 的判断和流程。
