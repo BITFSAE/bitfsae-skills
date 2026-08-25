@@ -11,6 +11,7 @@
 - 增加 skills.sh 多 Skill 仓库页面配置、CLI 安装说明和配置校验。
 - 增加 OpenAI Skills API 的独立打包工具与创建、版本更新流程。
 - 确定仓库采用 MIT License 公开发布。
+- 单一维护者阶段取消强制人工批准，并移除尚不存在的 Code Owner 团队引用。
 
 ### 待办
 
