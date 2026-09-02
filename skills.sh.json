@@ -15,6 +15,13 @@
       "skills": [
         "bitfsae-github-workflow"
       ]
+    },
+    {
+      "title": "CAN/DBC 工具",
+      "description": "面向 CAN DBC 报文数据库编辑、校验与 CANdb++ 兼容修复的 Skills。",
+      "skills": [
+        "can-dbc-edit"
+      ]
     }
   ]
 }

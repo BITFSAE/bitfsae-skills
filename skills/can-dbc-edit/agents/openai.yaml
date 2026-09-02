@@ -1,0 +1,4 @@
+interface:
+  display_name: "CAN DBC Edit"
+  short_description: "Safely edit and validate CAN DBC files via cantools/canmatrix"
+  default_prompt: "Use $can-dbc-edit to edit, validate, or repair the CAN DBC files without hand-writing BO_/SG_ syntax."

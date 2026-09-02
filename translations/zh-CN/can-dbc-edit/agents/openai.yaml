@@ -1,0 +1,4 @@
+interface:
+  display_name: "CAN DBC 编辑"
+  short_description: "通过 cantools/canmatrix 安全编辑并校验 CAN DBC 文件"
+  default_prompt: "Use $can-dbc-edit to edit, validate, or repair the CAN DBC files without hand-writing BO_/SG_ syntax."

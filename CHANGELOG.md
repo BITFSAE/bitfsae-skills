@@ -4,6 +4,7 @@
 
 ### 已完成
 
+- 新增 `can-dbc-edit`（来自队内 Codex skill v1.1，MIT 授权）：基于 cantools/canmatrix 的 DBC 编辑、校验与 CANdb++ 兼容修复。入库时去掉 frontmatter 中的 license/metadata 字段以通过仓库校验，正文与脚本保持原版，并补齐 `agents/openai.yaml` 和 `translations/zh-CN/` 中文镜像；同时在 README 和 `skills.sh.json` 增加“CAN/DBC 工具”分组登记。
 - 新增 `bitfsae-github-workflow`，覆盖分支、提交、PR 审查、共享接口同步和安全边界，并保持触发范围与约束精简。
 - 新增 `translations/zh-CN/` 中文镜像，不参与安装、打包与发布，仅用于队内阅读和与英文原版同步。
 - 建立 BITFSAE 多 Skill 公共仓库结构、贡献规范和自动校验。

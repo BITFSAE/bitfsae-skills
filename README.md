@@ -10,6 +10,7 @@ BITFSAE 公开维护、队内共享的 Agent Skills。每个 Skill 都是独立�
 | --- | --- | --- |
 | [`bitfsae-project-standards`](skills/bitfsae-project-standards/SKILL.md) | 全项目规范审查、文档体系、共享接口、交接与发布治理 | 仅在明确需要全项目工作时调用，不用于普通代码修改、构建或 Git 操作 |
 | [`bitfsae-github-workflow`](skills/bitfsae-github-workflow/SKILL.md) | BITFSAE 仓库的分支、提交、PR 审查、协议同步与安全检查 | 在 BITFSAE 仓库处理提交、推送、PR、审查、合并或组织 Git 协作时调用 |
+| [`can-dbc-edit`](skills/can-dbc-edit/SKILL.md) | 安全编辑、校验和修复 CAN DBC 文件（cantools/canmatrix，兼容 CANdb++） | 修改 DBC 报文/信号/布局、修 DBC 语法错误、处理 CANdb++ 打不开或 GBK 编码问题时调用 |
 
 ## 目录结构
 
@@ -60,6 +61,7 @@ npx skills add BITFSAE/bitfsae-skills \
 git clone https://github.com/BITFSAE/bitfsae-skills.git
 cp -R bitfsae-skills/skills/bitfsae-project-standards ~/.codex/skills/
 cp -R bitfsae-skills/skills/bitfsae-github-workflow ~/.codex/skills/
+cp -R bitfsae-skills/skills/can-dbc-edit ~/.codex/skills/
 ```
 
 更新时重新同步同名目录，并重新启动或刷新使用 Skills 的客户端。不要把整个仓库根目录当作单个 Skill 安装。
@@ -75,6 +77,7 @@ GitHub 是公开发布源，skills.sh 负责发现和展示。Skill 合并并推
 - 仓库：<https://skills.sh/BITFSAE/bitfsae-skills>
 - Skill：<https://skills.sh/BITFSAE/bitfsae-skills/bitfsae-project-standards>
 - Skill：<https://skills.sh/BITFSAE/bitfsae-skills/bitfsae-github-workflow>
+- Skill：<https://skills.sh/BITFSAE/bitfsae-skills/can-dbc-edit>
 
 ### OpenAI Skills API
 
