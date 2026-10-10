@@ -13,7 +13,7 @@ description: 建立或审查 BITFSAE 全项目工程规范，覆盖仓库文档�
 
 1. 阅读仓库指令，检查当前目录树、构建系统、源码、生成文件、测试、文档、模式与版本历史。
 2. 为每条事实找到权威来源。当前行为对应实现代码与生成器配置；电气事实对应硬件设计文件；共享接口对应已批准的协议/数据库文件。
-3. 判断项目类型与成熟度。特殊项目阅读 [project-adaptation.md](references/project-adaptation.md)，重排文档前阅读 [documentation-system.md](references/documentation-system.md)，涉及 MCU、CAN、硬件、生成代码或实时行为时阅读 [embedded-interfaces.md](references/embedded-interfaces.md)。
+3. 判断项目类型与成熟度。特殊项目阅读 [project-adaptation.md](references/project-adaptation.md)，重排文档前阅读 [documentation-system.md](references/documentation-system.md)，撰写或修订正文前阅读 [writing-style.md](references/writing-style.md)，涉及 MCU、CAN、硬件、生成代码或实时行为时阅读 [embedded-interfaces.md](references/embedded-interfaces.md)。
 4. 建立简短清单：公开接口、常改配置、主要模块、故障行为、构建路径，以及尚未验证的假设。
 5. 对照实现检查文档。纠正过期表述、单位含糊、范围缺失、字节序错误、照搬的项目事实和重复规格。
 6. 只新增或整理项目真正需要的文档。先阅读 [documentation-system.md](references/documentation-system.md)。
@@ -40,7 +40,7 @@ description: 建立或审查 BITFSAE 全项目工程规范，覆盖仓库文档�
 - 外部接口、常改配置与非平凡模块都需要文档。详细要求见 [documentation-system.md](references/documentation-system.md)。
 - 文档与示例使用仓库语言。不要加入无关语言的示例。
 - 区分已验证行为、设计意图、示例与待定决策。不得把假设表述为已实现或已验证的事实。
-- 表达直接、易读。避免口号、说教、多余术语、填充与重复。
+- 用平实的工程化语言。避免商业化用词、夸张、自评式论断、绝对化词汇、口号、说教、填充与重复。规则正着说并给出原因。只精简读者理解实现不需要的内容。详见 [writing-style.md](references/writing-style.md)。
 
 ## 接口规则
 
@@ -59,4 +59,5 @@ description: 建立或审查 BITFSAE 全项目工程规范，覆盖仓库文档�
 - 重要数值和主张都要追溯到代码、生成器配置、硬件文件或已批准接口定义。
 - 实际计算或编译可验证的示例。保持例子的字段长度与示例数据准确。
 - 未核实的硬件映射或上游字段名要明确标记，后续工作写入 CHANGELOG.md。
+- 修订后的正文对照 [writing-style.md](references/writing-style.md) 第 7 节自查。
 - 报告改了哪些内容、验证了什么、仍有哪些未验证；报告保持简洁。

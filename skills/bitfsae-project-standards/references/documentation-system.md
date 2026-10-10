@@ -70,6 +70,8 @@ Record outcomes and compatibility impact, not every commit. Do not claim an unte
 
 Write as contracts for producers and consumers. Compact overview → exact tables → error behavior → verified examples. Keep interpretation separate from raw layout.
 
+Describe what can be observed at the interface. Leave out internal implementation such as C functions, queues, hardware filters, interrupt handlers, and task scheduling; module documents own those. Keep current behavior, items awaiting confirmation, and future plans in separate sections. Do not drop timing, field, or error information that integration testing needs for the sake of brevity.
+
 For each field include: name, offset, width, type, byte order, scale, offset, unit, range, invalid value, and meaning. State timing, reset, retry, sequence, persistence, and version compatibility. Use the project's implementation language for examples.
 
 Keep DBC, OpenAPI, JSON Schema, protobuf, public headers, or similar machine-readable definitions synchronized with prose. Note when a schema contains provisional names requiring upstream verification.
@@ -115,5 +117,6 @@ Build documents: prerequisites, exact supported commands, output paths, flash/de
 - Lead with the result or behavior. Define abbreviations once. Put units next to values.
 - Prefer tables for exact field mappings and configuration. Prefer prose for reasons and interactions.
 - Remove stale history from current-state documents; keep it in the changelog or version control.
-- Avoid exaggerated claims, generic teaching, repeated warnings, and text that does not help a teammate operate or modify the project.
+- Keep implemented behavior apart from pending work; calibration, integration tests, unconfirmed parameters, and known gaps go at the end.
+- Wording, negation, order, and completeness rules are in [writing-style.md](writing-style.md). Leave out repeated warnings and text that does not help a teammate operate or modify the project.
 - During every relevant code change, update the owning document in the same work item.

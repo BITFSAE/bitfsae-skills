@@ -13,7 +13,7 @@ Make the project understandable, modifiable, testable, and transferable without 
 
 1. Read repository instructions and inspect the current tree, build system, source, generated files, tests, documents, schemas, and version history.
 2. Identify authoritative sources for each fact. Current behavior → implementation code and generator configuration; electrical facts → hardware design files; shared interfaces → approved network/database files.
-3. Classify the project and its maturity. Read [project-adaptation.md](references/project-adaptation.md) for non-typical or constrained projects, [documentation-system.md](references/documentation-system.md) before reorganizing documents, and [embedded-interfaces.md](references/embedded-interfaces.md) for MCU, CAN, hardware, generated code, or real-time behavior.
+3. Classify the project and its maturity. Read [project-adaptation.md](references/project-adaptation.md) for non-typical or constrained projects, [documentation-system.md](references/documentation-system.md) before reorganizing documents, [writing-style.md](references/writing-style.md) before writing or revising prose, and [embedded-interfaces.md](references/embedded-interfaces.md) for MCU, CAN, hardware, generated code, or real-time behavior.
 4. Build a short inventory of public interfaces, frequently changed settings, major modules, failure behavior, build paths, and known unverified assumptions.
 5. Compare documentation against implementation. Correct stale claims, ambiguous units, missing ranges, wrong byte order, copied project facts, and duplicated specifications.
 6. Add or reorganize only the documents the project needs. Read [documentation-system.md](references/documentation-system.md) first.
@@ -40,7 +40,7 @@ Do not change intended behavior during a documentation-only task. If documentati
 - External interfaces, frequently changed configuration, and nontrivial modules all require documentation. See [documentation-system.md](references/documentation-system.md) for detailed requirements.
 - Write documentation and examples in the repository's language. Do not add unrelated-language examples.
 - Distinguish verified behavior, design intent, examples, and pending decisions. Never present an assumption as implemented or verified fact.
-- Be direct and readable. Avoid slogans, lectures, unnecessary jargon, filler, and repetition.
+- Write in plain engineering language. Avoid marketing wording, exaggeration, self-assessment, absolute words, slogans, lectures, filler, and repetition. State rules positively and give reasons. Shorten only what the reader does not need to understand the implementation. See [writing-style.md](references/writing-style.md).
 
 ## Interface Rules
 
@@ -59,4 +59,5 @@ If a cross-repository update is not authorized or facts remain unverified, repor
 - Trace important numbers and claims back to code, generator configuration, hardware files, or approved interface definitions.
 - Verify examples with actual calculations or compilation when practical.
 - Explicitly mark unverified hardware mappings or upstream field names; place follow-up work in `CHANGELOG.md`.
+- Check revised prose against the checklist in [writing-style.md](references/writing-style.md) §7.
 - Report what changed, what was validated, and what remains unverified. Keep the report concise.
