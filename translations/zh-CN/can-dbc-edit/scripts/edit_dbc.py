@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from validate_dbc import load_cantools
+from validate_dbc import VECTOR_DUMMY, load_cantools, lost_statements, statement_counts
 
 SIGNAL_SCALAR_FIELDS = {
     "scale",
@@ -282,6 +282,10 @@ def main() -> None:
 
     db, encoding, cantools_mod = load_cantools(in_path, strict=not args.no_strict_in)
     print(f"loaded {in_path} encoding={encoding} messages={len(db.messages)}")
+    before = statement_counts(in_path)
+    if before[VECTOR_DUMMY]:
+        print(f"WARN {in_path} contains {VECTOR_DUMMY}; cantools does not load it, so the dump drops it "
+              "with its signals and comments. Use Path A unless those unused signals may go.")
 
     for i, op in enumerate(ops, 1):
         summary = apply_op(db, op)
@@ -294,6 +298,9 @@ def main() -> None:
 
     dump_dbc(db, out_path, encoding, cantools_mod)
     print(f"wrote {out_path}")
+    lost = lost_statements(before, statement_counts(out_path))
+    if lost:
+        print("WARN statements lost by the dump: " + "; ".join(lost))
 
     # Must parse back.
     load_cantools(out_path, strict=True)

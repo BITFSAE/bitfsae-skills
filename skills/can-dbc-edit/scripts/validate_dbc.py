@@ -4,11 +4,18 @@
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
 
-ENCODINGS = ("utf-8", "cp1252", "latin-1")
+ENCODINGS = ("utf-8", "utf-8-sig", "gbk", "cp1252", "latin-1")
+VECTOR_DUMMY = "VECTOR__INDEPENDENT_SIG_MSG"
+STATEMENT = re.compile(
+    r"^\s*(BO_TX_BU_|BO_|SG_MUL_VAL_|SG_|CM_ BU_|CM_ BO_|CM_ SG_|CM_ EV_|CM_|VAL_TABLE_|VAL_|"
+    r"SIG_VALTYPE_|SIG_GROUP_|BA_DEF_DEF_|BA_DEF_|BA_|BU_)(?=[\s:\"]|$)"
+)
 
 
 def _die(msg: str, code: int = 1) -> None:
@@ -16,7 +23,14 @@ def _die(msg: str, code: int = 1) -> None:
     raise SystemExit(code)
 
 
-def load_cantools(path: Path, strict: bool):
+def load_cantools(path: Path, strict: bool, keep_order: bool = True):
+    """Load with cantools.
+
+    ``keep_order=True`` keeps the signal order of the file (``sort_signals=None``), which
+    is what editing and dumping want.  Anything that decodes payloads must load with
+    ``keep_order=False``: with ``sort_signals=None`` cantools cannot unpack messages whose
+    Intel signals are listed from high to low start bit.
+    """
     try:
         import cantools
     except ImportError:
@@ -29,7 +43,7 @@ def load_cantools(path: Path, strict: bool):
                 str(path),
                 encoding=enc,
                 strict=strict,
-                sort_signals=None,
+                **({"sort_signals": None} if keep_order else {}),
             )
             return db, enc, cantools
         except UnicodeDecodeError as exc:
@@ -40,6 +54,70 @@ def load_cantools(path: Path, strict: bool):
             # encoding succeeded enough to parse; do not try other encodings
             _die(f"cantools load failed ({enc}, strict={strict}): {exc}")
     _die(f"cantools could not decode file with {ENCODINGS}: {last_err}")
+
+
+def read_text(path: Path) -> str:
+    raw = path.read_bytes()
+    for enc in ENCODINGS:
+        try:
+            return raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("latin-1")
+
+
+def statement_counts(path: Path) -> Counter:
+    """Count DBC statements by keyword in the raw text.
+
+    cantools drops some statements when it loads (the Vector dummy message
+    ``VECTOR__INDEPENDENT_SIG_MSG`` and its signals and comments), so a semantic diff
+    cannot see them disappear; the raw counts can.
+    """
+    counts: Counter = Counter()
+    in_namespace = False
+    for line in read_text(path).splitlines():
+        if line.startswith("NS_"):
+            in_namespace = True
+            continue
+        if in_namespace:
+            # The NS_ block lists bare keywords on indented lines; they are not statements.
+            if line[:1] in (" ", "\t") and len(line.split()) == 1:
+                continue
+            in_namespace = False
+        match = STATEMENT.match(line)
+        if match:
+            counts[match.group(1)] += 1
+    if VECTOR_DUMMY in read_text(path):
+        counts[VECTOR_DUMMY] = 1
+    return counts
+
+
+def lost_statements(old: Counter, new: Counter) -> list[str]:
+    return [
+        f"{key}: {old[key]} -> {new[key]}"
+        for key in sorted(old)
+        if new[key] < old[key]
+    ]
+
+
+def decode_check(path: Path) -> int:
+    """Decode every message once with fixed payloads, loading with cantools' default order."""
+    db, enc, _ = load_cantools(path, strict=False, keep_order=False)
+    failures: list[str] = []
+    checked = 0
+    for msg in db.messages:
+        checked += 1
+        for pattern in (0x00, 0xFF, 0xA5):
+            data = bytes([pattern]) * msg.length
+            try:
+                msg.decode(data, decode_choices=False, scaling=False)
+            except Exception as exc:
+                failures.append(f"{msg.name} (0x{msg.frame_id:X}) payload {data.hex()}: {exc}")
+                break
+    print(f"decode-check {path} encoding={enc}: {checked - len(failures)}/{checked} message(s) decode")
+    for line in failures:
+        print("  FAIL", line)
+    return 3 if failures else 0
 
 
 def load_canmatrix(path: Path):
@@ -86,7 +164,11 @@ def print_summary(label: str, summary: dict) -> None:
 def run_cancompare(old: Path, new: Path) -> int:
     cmd = ["cancompare", str(old), str(new)]
     print("+", " ".join(cmd))
-    proc = subprocess.run(cmd, text=True, capture_output=True)
+    try:
+        proc = subprocess.run(cmd, text=True, capture_output=True)
+    except FileNotFoundError:
+        print("cancompare: not installed (it ships with canmatrix); skipped")
+        return 0
     out = (proc.stdout or "") + (proc.stderr or "")
     if out.strip():
         print(out.rstrip())
@@ -143,6 +225,11 @@ def main() -> None:
     parser.add_argument("--no-strict", action="store_true", help="cantools strict=False")
     parser.add_argument("--cross-check", action="store_true", help="also parse with canmatrix")
     parser.add_argument("--compare", action="store_true", help="semantic + cancompare of two files")
+    parser.add_argument(
+        "--decode-check",
+        action="store_true",
+        help="decode every message with fixed payloads (loads with cantools' default signal order)",
+    )
     args = parser.parse_args()
 
     strict = not args.no_strict
@@ -164,10 +251,28 @@ def main() -> None:
         print(f"semantic diffs: {len(diffs)}")
         for line in diffs:
             print(" ", line)
+        old_counts, new_counts = statement_counts(files[0]), statement_counts(files[1])
+        print("raw statements (old -> new):")
+        for key in sorted(set(old_counts) | set(new_counts)):
+            marker = " " if old_counts[key] == new_counts[key] else "~"
+            print(f"  {marker} {key}: {old_counts[key]} -> {new_counts[key]}")
+        lost = lost_statements(old_counts, new_counts)
+        if lost:
+            print("WARN statements lost (cantools may not have loaded them, so the semantic diff cannot show it):")
+            for line in lost:
+                print(" ", line)
+            if old_counts[VECTOR_DUMMY] and not new_counts[VECTOR_DUMMY]:
+                print(f"  {VECTOR_DUMMY} was dropped; use Path A, or confirm the unused signals may go")
         rc = run_cancompare(files[0], files[1])
         if diffs:
             raise SystemExit(0 if rc == 0 else 0)  # diffs are expected after an edit
         raise SystemExit(0)
+
+    if args.decode_check:
+        code = 0
+        for f in files:
+            code = max(code, decode_check(f))
+        raise SystemExit(code)
 
     code = 0
     for f in files:

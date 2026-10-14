@@ -20,7 +20,7 @@ description: 编辑、修补、校验或重写 CAN DBC（.dbc）文件，不手�
 **路径 A——外科手术式（默认）。** 在已有行上做孤立字段修改——缩放系数、偏移、最小/最大值、单位、注释、VAL_ 标签、周期属性。
 
 1. `python3 scripts/validate_dbc.py --strict <file.dbc>`
-2. 定位到确切行（`grep` / 读文件）。只改那些字符。
+2. 定位到确切行（`grep` / 读文件）。只改那些字符。名称超过 32 个字符的信号，`SG_` 里写的是前 32 个字符，全名在 `BA_ "SystemSignalLongSymbol"` 里（见 `references/pitfalls.md`）。
 3. 再校验一次。解析失败就回退。不要通过重写文件来"修复"一个坏的导出。
 
 **路径 B——结构化重写。** 增删或重排报文/信号、改布局、字节序、多路复用，或新建数据库。
@@ -31,8 +31,9 @@ description: 编辑、修补、校验或重写 CAN DBC（.dbc）文件，不手�
 4. `python3 scripts/validate_dbc.py --strict --cross-check <out.dbc>`
 5. `python3 scripts/validate_dbc.py --compare <in.dbc> <out.dbc>`
 6. 展示 compare 摘要和文本 diff。完成的标准是干净语义 diff 加严格解析通过——不是 git diff 很小。
+7. 读 compare 里的 `raw statements` 部分。cantools 不加载 Vector 的虚拟报文 `VECTOR__INDEPENDENT_SIG_MSG`，导出会把它连同信号和注释一起丢掉，语义 diff 却是空的。每一行 `WARN statements lost` 都必须能用用户要求的改动解释。
 
-如果路径 B 会丢掉必须保留的属性、注释、多路复用或信号组，停下来改用路径 A 或拆分任务。
+如果路径 B 会丢掉必须保留的属性、注释、多路复用、信号组或 Vector 虚拟报文，停下来改用路径 A 或拆分任务。
 
 **路径 C——CANdb++ / Vector 编辑器打不开文件。** 文件可能在 cantools 里本来就能解析。不要通过 cantools 导出来"修复"它。
 
@@ -53,6 +54,7 @@ Skill 根目录下的脚本（在 skill 目录里运行，或传绝对路径）�
 python3 scripts/validate_dbc.py --strict FILE.dbc
 python3 scripts/validate_dbc.py --strict --cross-check FILE.dbc
 python3 scripts/validate_dbc.py --compare OLD.dbc NEW.dbc
+python3 scripts/validate_dbc.py --decode-check FILE.dbc
 python3 scripts/edit_dbc.py IN.dbc OUT.dbc OPS.json
 python3 scripts/normalize_candbpp.py IN.dbc OUT_STEM
 ```
@@ -62,7 +64,7 @@ python3 scripts/normalize_candbpp.py IN.dbc OUT_STEM
 脚本使用的加载规则：
 
 - 每次写入后 `strict=True`
-- 加载和导出都用 `sort_signals=None`（不让 cantools 重排位）
+- 加载和导出都用 `sort_signals=None`（不让 cantools 重排位）——只用于编辑。绝不能用这样加载的数据库解码：Intel 信号按起始位从高到低排列的报文，cantools 会解包失败。解码校验按默认顺序加载（`--decode-check` 就是这样做的）。
 - 依次尝试编码 `utf-8`、`utf-8-sig`、`gbk`、`cp1252`、`latin-1`
 - DBC 输出用 `\r\n`
 - cantools `strict` 加载拒绝 UTF-8 BOM——校验无 BOM 副本
@@ -76,13 +78,15 @@ python3 scripts/normalize_candbpp.py IN.dbc OUT_STEM
 - 报文 / 信号 / 字段 / 旧值 → 新值
 - 校验命令输出
 - 文本 diff（仓库里用 `git diff -- FILE.dbc`，否则 `diff -u`）
-- 路径 B 或关键改动时的 `cancompare` / `--compare` 摘要
+- 路径 B 或关键改动时的 `cancompare` / `--compare` 摘要，包括原始语句计数
+- 改了布局、字节序、缩放或偏移时的 `--decode-check` 输出
 
 cantools 和 canmatrix 结论不一致时，两边都报告，不交付。
 
 ## 禁止事项
 
 - 仅仅为了"规范化"用户没要求重排格式的文件而导出再重载。
+- 用 `sort_signals=None` 加载的数据库解码数据。
 - 在同一步里混合路径 A 行编辑和路径 B 导出。
 - 心算 `@0`/`@1` 起始位。
 - 目标工具是 CANdb++ 时，把 `CM_` / `VAL_` 留在 `BO_` 块之间交错。

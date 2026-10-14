@@ -19,6 +19,7 @@ Vector start bit for `@0` is not "LSB of the signal in a linear bit index". Do n
 
 `load_file` + `dump_file` is not lossless. Common losses:
 
+- the Vector dummy message `BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG` with its signals and its `CM_ BO_` / `CM_ SG_` comments: cantools does not load it, so a dump drops it and a semantic diff cannot show the loss. One team file lost 51 signals this way. `--compare` reports raw statement counts for exactly this reason
 - custom `BA_DEF_` / some attributes
 - `SIG_GROUP_`
 - environment variables
@@ -40,6 +41,12 @@ cantools.database.load_file(
 ```
 
 `strict=True` rejects overlapping signals. Use `strict=False` only to diagnose a file that already will not load.
+
+`sort_signals=None` is for editing and dumping only. A database loaded that way cannot decode messages whose Intel signals are listed from high to low start bit (`DecodeError: unpacking failed`, cause `Short data.`), even though the file is valid. Several team DBCs contain such messages. To decode, load a second database with the default order:
+
+```python
+decode_db = cantools.database.load_file(path, strict=True)   # no sort_signals argument
+```
 
 To minimize dump churn when Path B is required:
 
@@ -80,10 +87,20 @@ end those two with ` ;`, and add `Vector__XXX` to `BU_:` when it is used.
 `BO_ 2550588916` is `0x1806E5F4 | 0x80000000`. Keep it. Do not rewrite as
 the 29-bit ID only, and do not treat `> 2147483647` as invalid.
 
+## Long names
+
+CANdb++ limits the identifier in `SG_` / `BO_` / `BU_:` to 32 characters. A longer name is stored as its 32-character prefix plus `BA_ "SystemSignalLongSymbol" SG_ <id> <prefix> "<full name>";` (`SystemMessageLongSymbol` for messages, `SystemNodeLongSymbol` for nodes). cantools reports the full name, so a name found by `grep` in the text may be the prefix. Edit the prefix in `SG_` and keep the attribute in step.
+
+## Attribute values
+
+- `BA_DEF_DEF_ "GenMsgCycleTime" 100;` gives every message without its own `BA_` a 100 ms cycle. A missing `BA_` is not "no cycle".
+- `GenSigStartValue` holds the raw, unscaled start value.
+
 ## Validation is not decoding
 
-A file can parse and still have the wrong start bit. After layout changes, decode a known raw frame if the user provided one:
+A file can parse and still have the wrong start bit. `--decode-check` decodes every message with fixed payloads; after layout changes also decode a known raw frame if the user provided one, with a database loaded in the default order:
 
 ```python
+db = cantools.database.load_file(path, strict=True)
 db.get_message_by_name("EngineData").decode(bytes.fromhex("0102030405060708"))
 ```
