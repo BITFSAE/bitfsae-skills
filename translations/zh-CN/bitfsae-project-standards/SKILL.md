@@ -40,7 +40,7 @@ description: 建立或审查 BITFSAE 全项目工程规范，覆盖仓库文档�
 - 外部接口、常改配置与非平凡模块都需要文档。详细要求见 [documentation-system.md](references/documentation-system.md)。
 - 文档与示例使用仓库语言。不要加入无关语言的示例。
 - 区分已验证行为、设计意图、示例与待定决策。不得把假设表述为已实现或已验证的事实。
-- 用平实的工程化语言。避免商业化用词、夸张、自评式论断、绝对化词汇、口号、说教、填充与重复。规则正着说并给出原因。只精简读者理解实现不需要的内容。详见 [writing-style.md](references/writing-style.md)。
+- 先按文档用途定语气，再用平实的工程化语言撰写。避免商业化用词、无依据的夸张、情绪化措辞、空洞自评、无边界的绝对化词汇、口号、说教、填充与重复。规则正着说并给出原因，让关键结论易于扫读。详见 [writing-style.md](references/writing-style.md)。
 
 ## 接口规则
 

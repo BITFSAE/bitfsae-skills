@@ -113,7 +113,7 @@ Build documents: prerequisites, exact supported commands, output paths, flash/de
 
 ## 9. Writing and Maintenance Rules
 
-- Match structure to purpose: README navigates, interface docs are exact, configuration docs are task-oriented, module docs explain behavior, changelogs summarize change.
+- Match structure and tone to purpose: README navigates, interface docs are exact, configuration docs are task-oriented, module docs explain behavior, changelogs summarize change, and internal notes prioritize scannability (see [writing-style.md](writing-style.md)).
 - Lead with the result or behavior. Define abbreviations once. Put units next to values.
 - Prefer tables for exact field mappings and configuration. Prefer prose for reasons and interactions.
 - Remove stale history from current-state documents; keep it in the changelog or version control.

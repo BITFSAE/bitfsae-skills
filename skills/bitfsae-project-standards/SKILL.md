@@ -40,7 +40,7 @@ Do not change intended behavior during a documentation-only task. If documentati
 - External interfaces, frequently changed configuration, and nontrivial modules all require documentation. See [documentation-system.md](references/documentation-system.md) for detailed requirements.
 - Write documentation and examples in the repository's language. Do not add unrelated-language examples.
 - Distinguish verified behavior, design intent, examples, and pending decisions. Never present an assumption as implemented or verified fact.
-- Write in plain engineering language. Avoid marketing wording, exaggeration, self-assessment, absolute words, slogans, lectures, filler, and repetition. State rules positively and give reasons. Shorten only what the reader does not need to understand the implementation. See [writing-style.md](references/writing-style.md).
+- Match tone to the document's role and write in plain engineering language. Avoid marketing wording, unsupported exaggeration, emotional wording, empty self-assessment, absolute words without bounds, slogans, lectures, filler, and repetition. State rules positively, give reasons, and keep key findings scannable. See [writing-style.md](references/writing-style.md).
 
 ## Interface Rules
 
