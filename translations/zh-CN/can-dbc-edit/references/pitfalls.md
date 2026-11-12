@@ -19,6 +19,7 @@
 
 `load_file` + `dump_file` 不是无损的。常见丢失：
 
+- Vector 的虚拟报文 `BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG` 及其信号和 `CM_ BO_` / `CM_ SG_` 注释：cantools 不加载它，导出就把它丢掉，语义 diff 看不出来。队内某个文件因此少了 51 个信号。`--compare` 报告原始语句计数就是为了发现这种丢失
 - 自定义 `BA_DEF_` / 部分属性
 - `SIG_GROUP_`
 - 环境变量
@@ -40,6 +41,12 @@ cantools.database.load_file(
 ```
 
 `strict=True` 拒绝重叠信号。只用 `strict=False` 诊断已经加载失败的文件。
+
+`sort_signals=None` 只用于编辑和导出。这样加载的数据库，无法解码 Intel 信号按起始位从高到低排列的报文（`DecodeError: unpacking failed`，原因 `Short data.`），尽管文件本身是合法的。队内几份 DBC 就有这样的报文。要解码，另外按默认顺序加载一份：
+
+```python
+decode_db = cantools.database.load_file(path, strict=True)   # 不传 sort_signals
+```
 
 路径 B 必须用时，为减少导出扰动：
 
@@ -74,10 +81,20 @@ cantools 容忍 `CM_` 跟在每个 `BO_` 下面。CANdb++ 不容忍。
 
 `BO_ 2550588916` 就是 `0x1806E5F4 | 0x80000000`。保留它。不要改写成只含 29 位 ID，也不要把 `> 2147483647` 当作非法。
 
+## 长名称
+
+CANdb++ 把 `SG_` / `BO_` / `BU_:` 里的标识符限制在 32 个字符。更长的名称保存为前 32 个字符，再加 `BA_ "SystemSignalLongSymbol" SG_ <id> <前缀> "<全名>";`（报文用 `SystemMessageLongSymbol`，节点用 `SystemNodeLongSymbol`）。cantools 报告的是全名，所以在文本里 `grep` 到的名字可能只是前缀。改 `SG_` 里的前缀，同时保持属性一致。
+
+## 属性取值
+
+- `BA_DEF_DEF_ "GenMsgCycleTime" 100;` 让每条没有自己 `BA_` 的报文都有 100 ms 周期。没有 `BA_` 不等于“没有周期”。
+- `GenSigStartValue` 存的是未缩放的原始初值。
+
 ## 校验不等于解码
 
-文件能解析不代表起始位正确。改布局后，如果用户给了已知原始帧，解码验证：
+文件能解析不代表起始位正确。`--decode-check` 用固定数据解码每条报文；改布局后，如果用户给了已知原始帧，也要解码验证，数据库按默认顺序加载：
 
 ```python
+db = cantools.database.load_file(path, strict=True)
 db.get_message_by_name("EngineData").decode(bytes.fromhex("0102030405060708"))
 ```
